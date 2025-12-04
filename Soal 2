@@ -1,0 +1,63 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int interpolationSearch(const vector<int>& a, int x) {
+    int low = 0, high = (int)a.size() - 1;
+
+    while (low <= high && x >= a[low] && x <= a[high]) {
+        if (a[low] == a[high]) {
+            if (a[low] == x) return low;
+            else break;
+        }
+
+        long long pos = low + (long long)(x - a[low]) * (high - low) / (a[high] - a[low]);
+
+        if (pos < low || pos > high) break;
+
+        if (a[pos] == x) return (int)pos;
+        if (a[pos] < x) low = (int)pos + 1;
+        else high = (int)pos - 1;
+    }
+    return -1; // tidak ketemu
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n;
+    if (!(cin >> n)) return 0;
+
+    vector<int> seat(n);
+    for (int i = 0; i < n; ++i) cin >> seat[i];
+
+    int x;
+    cin >> x;
+
+    int idx = interpolationSearch(seat, x);
+
+    if (idx != -1) {
+        cout << "KURSI " << x << " TERSEDIA\n";
+        cout << "Index: " << idx << ", Nomor kursi: " << seat[idx] << "\n";
+    } else {
+        // cari kursi terdekat tersedia
+        int closestIdx = -1;
+        int bestDiff = INT_MAX;
+        for (int i = 0; i < n; ++i) {
+            int diff = abs(seat[i] - x);
+            if (diff < bestDiff) {
+                bestDiff = diff;
+                closestIdx = i;
+            }
+        }
+        if (closestIdx == -1) {
+            cout << "KURSI " << x << " TIDAK TERSEDIA DAN TIDAK ADA KURSI LAIN\n";
+        } else {
+            cout << "KURSI " << x << " TIDAK TERSEDIA\n";
+            cout << "Kursi terdekat tersedia: index " << closestIdx
+                 << ", nomor kursi " << seat[closestIdx] << "\n";
+        }
+    }
+
+    return 0;
+}
