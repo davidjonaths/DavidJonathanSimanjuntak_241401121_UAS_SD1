@@ -1,0 +1,73 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+typedef pair<int, string> pis;
+
+int main() {
+    // Graph sesuai SOAL UAS SD1 yang diberikan
+    map<string, vector<pair<string, int>>> g;
+
+    g["Medan"] = {{"Tebing Tinggi", 70}, {"Brastagi", 60}};
+    g["Tebing Tinggi"] = {{"Medan", 70}, {"Pematangsiantar", 50}};
+    g["Brastagi"] = {{"Medan", 60}, {"Sidikalang", 90}, {"Pematangsiantar", 80}};
+    g["Pematangsiantar"] = {{"Tebing Tinggi", 50}, {"Brastagi", 80}, {"Parapat", 45}, {"Sidikalang", 65}};
+    g["Sidikalang"] = {{"Brastagi", 90}, {"Pematangsiantar", 65}, {"Parapat", 120}};
+    g["Parapat"] = {{"Pematangsiantar", 45}, {"Sidikalang", 120}};
+
+    string start, target;
+    cin >> start >> target;
+
+    map<string, int> dist;
+    map<string, string> prev;
+
+    for (auto &kv : g) dist[kv.first] = INT_MAX;
+
+    priority_queue<pis, vector<pis>, greater<pis>> pq;
+
+    dist[start] = 0;
+    pq.push({0, start});
+
+    while (!pq.empty()) {
+        pis top = pq.top();
+        int d = top.first;
+        string u = top.second;
+        pq.pop();
+
+        if (d > dist[u]) continue;
+        if (u == target) break;
+
+        for (auto &vw : g[u]) {
+            const string &v = vw.first;
+            int w = vw.second;
+            if (dist[u] + w < dist[v]) {
+                dist[v] = dist[u] + w;
+                prev[v] = u;
+                pq.push({dist[v], v});
+            }
+        }
+    }
+
+    if (dist[target] == INT_MAX) {
+        cout << "TIDAK ADA JALUR";
+        return 0;
+    }
+
+    vector<string> path;
+    string cur = target;
+    while (cur != "") {
+        path.push_back(cur);
+        if (prev.find(cur) == prev.end()) break;
+        cur = prev[cur];
+    }
+
+    reverse(path.begin(), path.end());
+
+    cout << "Jalur terpendek: ";
+    for (int i = 0; i < path.size(); i++) {
+        cout << path[i];
+        if (i+1 < path.size()) cout << " -> ";
+    }
+    cout << "\nTotal jarak: " << dist[target] << " km\n";
+
+    return 0;
+}
