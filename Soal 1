@@ -1,0 +1,31 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n;
+    if (!(cin >> n)) return 0;
+
+    vector<int> p(n + 1); // parent Array nya
+    for (int i = 1; i <= n; ++i) { 
+        cin >> p[i]; // input parent untuk setiap node
+    }
+
+    vector<int> depth(n + 1, 0); // depth array untuk menyimpan kedalaman setiap node
+    int answer = 0; // menyimpan kedalaman maksimum
+
+    function<int(int)> getDepth = [&](int v) -> int { // fungsi rekursif untuk mendapatkan depth dari node v
+        if (depth[v] != 0) return depth[v]; // jika sudah dihitung, nilainya dikembalikan
+        if (p[v] == -1) return depth[v] = 1; // jika nodenya root, depthnya 1
+        return depth[v] = 1 + getDepth(p[v]);
+    };
+
+    for (int i = 1; i <= n; ++i) {
+        answer = max(answer, getDepth(i));
+    }
+
+    cout << answer << "\n";
+    return 0;
+}
